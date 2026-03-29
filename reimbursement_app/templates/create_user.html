@@ -1,0 +1,44 @@
+<!-- templates/create_user.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="bg-white rounded-xl shadow-md p-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Create New User</h1>
+        
+        <form method="POST" class="space-y-5">
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Full Name</label>
+                <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Email</label>
+                <input type="email" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Password</label>
+                <input type="password" name="password" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Role</label>
+                <select name="role" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option value="Employee">Employee</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Manager (if Employee)</label>
+                <select name="manager_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option value="">None</option>
+                    {% for manager in managers %}
+                    <option value="{{ manager.id }}">{{ manager.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="w-full gradient-bg text-white py-2 rounded-lg font-semibold hover:opacity-90 transition">
+                Create User
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

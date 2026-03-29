@@ -1,0 +1,49 @@
+<!-- templates/approvals.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white rounded-xl shadow-md p-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Pending Approvals</h1>
+    
+    {% if expenses %}
+        {% for expense in expenses %}
+        <div class="border rounded-lg mb-4 p-4 hover:shadow-md transition">
+            <div class="flex justify-between items-start">
+                <div>
+                    <div class="flex items-center space-x-3 mb-2">
+                        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">Pending</span>
+                        <span class="text-sm text-gray-500">Submitted by {{ expense.user_name }}</span>
+                    </div>
+                    <h3 class="font-semibold text-lg">{{ expense.category }}</h3>
+                    <p class="text-gray-600 mt-1">{{ expense.description }}</p>
+                    <div class="mt-2 text-sm text-gray-500">
+                        Amount: <span class="font-bold text-gray-800">{{ company.currency_symbol }}{{ expense.amount }}</span>
+                        | Date: {{ expense.expense_date[:10] }}
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <form method="POST" action="{{ url_for('approval_action', expense_id=expense.id) }}" class="inline">
+                        <input type="hidden" name="action" value="approve">
+                        <input type="text" name="comment" placeholder="Comment (optional)" class="hidden comment-input">
+                        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('approval_action', expense_id=expense.id) }}" class="inline">
+                        <input type="hidden" name="action" value="reject">
+                        <input type="text" name="comment" placeholder="Reason (optional)" class="hidden comment-input">
+                        <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center py-12">
+            <i class="fas fa-check-circle text-5xl text-gray-300 mb-4"></i>
+            <p class="text-gray-500">No pending approvals</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

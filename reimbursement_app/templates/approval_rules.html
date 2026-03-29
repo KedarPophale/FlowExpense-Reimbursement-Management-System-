@@ -1,0 +1,88 @@
+<!-- templates/approval_rules.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-md p-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Approval Rules Configuration</h1>
+        
+        <form method="POST" class="space-y-6">
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Approval Flow Type</label>
+                <select name="rule_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option value="sequential" {% if rules.type == 'sequential' %}selected{% endif %}>Sequential (Manager → Finance → Director)</option>
+                    <option value="parallel" {% if rules.type == 'parallel' %}selected{% endif %}>Parallel (Any approver)</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Approvers (in order)</label>
+                <select name="approvers" multiple class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" size="5">
+                    {% for manager in managers %}
+                    <option value="{{ manager.id }}" {% if manager.id in rules.approvers %}selected{% endif %}>{{ manager.name }} (Manager)</option>
+                    {% endfor %}
+                    {% for director in directors %}
+                    <option value="{{ director.id }}" {% if director.id in rules.approvers %}selected{% endif %}>{{ director.name }} (Admin)</option>
+                    {% endfor %}
+                </select>
+                <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
+            </div>
+            
+            <div class="border-t pt-4">
+                <h3 class="font-semibold text-gray-800 mb-3">Conditional Rules</h3>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Conditional Type</label>
+                    <select name="conditional_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="">None</option>
+                        <option value="percentage" {% if rules.conditional and rules.conditional.type == 'percentage' %}selected{% endif %}>Percentage Rule</option>
+                        <option value="special" {% if rules.conditional and rules.conditional.type == 'special' %}selected{% endif %}>Special Approver Rule</option>
+                        <option value="hybrid" {% if rules.conditional and rules.conditional.type == 'hybrid' %}selected{% endif %}>Hybrid Rule</option>
+                    </select>
+                </div>
+                
+                <div class="mt-3" id="thresholdField" style="display: none;">
+                    <label class="block text-gray-700 font-medium mb-2">Threshold (%)</label>
+                    <input type="number" name="threshold" placeholder="e.g., 60" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                
+                <div class="mt-3" id="specialApproverField" style="display: none;">
+                    <label class="block text-gray-700 font-medium mb-2">Special Approver (Auto-approval)</label>
+                    <select name="special_approver" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="">Select approver</option>
+                        {% for director in directors %}
+                        <option value="{{ director.id }}">{{ director.name }} (Admin)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <button type="submit" class="w-full gradient-bg text-white py-2 rounded-lg font-semibold hover:opacity-90 transition">
+                Save Rules
+            </button>
+        </form>
+        
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h4 class="font-semibold text-gray-700 mb-2">Current Rule Summary</h4>
+            <p class="text-sm text-gray-600">Flow: {{ rules.type|capitalize }}</p>
+            <p class="text-sm text-gray-600">Approvers: {{ rules.approvers|length }} assigned</p>
+            {% if rules.conditional %}
+            <p class="text-sm text-gray-600">Conditional: {{ rules.conditional.type }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    const conditionalSelect = document.querySelector('select[name="conditional_type"]');
+    const thresholdField = document.getElementById('thresholdField');
+    const specialField = document.getElementById('specialApproverField');
+    
+    function updateConditionalFields() {
+        const value = conditionalSelect.value;
+        thresholdField.style.display = (value === 'percentage' || value === 'hybrid') ? 'block' : 'none';
+        specialField.style.display = (value === 'special' || value === 'hybrid') ? 'block' : 'none';
+    }
+    
+    conditionalSelect.addEventListener('change', updateConditionalFields);
+    updateConditionalFields();
+</script>
+{% endblock %}

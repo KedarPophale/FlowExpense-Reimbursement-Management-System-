@@ -1,0 +1,110 @@
+<!-- templates/dashboard.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+        <p class="text-gray-500">Welcome back, {{ user.name }}!</p>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl shadow-md p-6 card-hover transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Total Expenses</p>
+                    <p class="text-3xl font-bold text-gray-800">{{ stats.total }}</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-receipt text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-6 card-hover transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Approved</p>
+                    <p class="text-3xl font-bold text-green-600">{{ stats.approved }}</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-6 card-hover transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Pending</p>
+                    <p class="text-3xl font-bold text-yellow-600">{{ stats.pending }}</p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-6 card-hover transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Pending Approvals</p>
+                    <p class="text-3xl font-bold text-purple-600">{{ stats.pending_approvals }}</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-tasks text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Expenses -->
+    <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-800">Recent Expenses</h2>
+            <a href="{{ url_for('view_expenses') }}" class="text-purple-600 hover:underline">View All</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr class="text-left text-gray-600">
+                        <th class="py-3 px-4">Date</th>
+                        <th class="py-3 px-4">Category</th>
+                        <th class="py-3 px-4">Amount</th>
+                        <th class="py-3 px-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses %}
+                    <tr class="border-t">
+                        <td class="py-3 px-4">{{ expense.expense_date[:10] }}</td>
+                        <td class="py-3 px-4">{{ expense.category }}</td>
+                        <td class="py-3 px-4">{{ company.currency_symbol }}{{ expense.amount }}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold
+                                {% if expense.status == 'approved' %}bg-green-100 text-green-700
+                                {% elif expense.status == 'rejected' %}bg-red-100 text-red-700
+                                {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+                                {{ expense.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-center py-6 text-gray-500">No expenses yet</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Company Info -->
+    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6">
+        <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-purple-200 rounded-full flex items-center justify-center">
+                <i class="fas fa-building text-purple-600 text-xl"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-gray-800">{{ company.name }}</h3>
+                <p class="text-sm text-gray-600">Currency: {{ company.currency }} ({{ company.currency_symbol }})</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

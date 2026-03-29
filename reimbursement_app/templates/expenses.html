@@ -1,0 +1,51 @@
+<!-- templates/expenses.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white rounded-xl shadow-md p-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">All Expenses</h1>
+    
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr class="text-left text-gray-600">
+                    <th class="py-3 px-4">Date</th>
+                    <th class="py-3 px-4">Employee</th>
+                    <th class="py-3 px-4">Category</th>
+                    <th class="py-3 px-4">Description</th>
+                    <th class="py-3 px-4">Amount</th>
+                    <th class="py-3 px-4">Status</th>
+                    <th class="py-3 px-4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr class="border-t hover:bg-gray-50">
+                    <td class="py-3 px-4">{{ expense.expense_date[:10] }}</td>
+                    <td class="py-3 px-4">{{ expense.user_name }}</td>
+                    <td class="py-3 px-4">{{ expense.category }}</td>
+                    <td class="py-3 px-4 max-w-xs truncate">{{ expense.description }}</td>
+                    <td class="py-3 px-4">{{ company.currency_symbol }}{{ expense.amount }}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold
+                            {% if expense.status == 'approved' %}bg-green-100 text-green-700
+                            {% elif expense.status == 'rejected' %}bg-red-100 text-red-700
+                            {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+                            {{ expense.status }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        {% if expense.receipt_path %}
+                        <a href="/static/uploads/{{ expense.receipt_path }}" target="_blank" class="text-blue-500 hover:underline text-sm">
+                            <i class="fas fa-receipt"></i> Receipt
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center py-8 text-gray-500">No expenses found</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
